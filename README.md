@@ -14,11 +14,12 @@
 ```toml
 [server]
 port = 1234
-key = "abcd"
-files_dir = [
-    {name = "abc", dir = "/path"},
-    {name = "cba", dir = "./path"}
-]
+key = "test"
+
+[[server.files]]
+name = "files"
+path = "./tests/files"
+
 ```
 
 ### json 文件格式

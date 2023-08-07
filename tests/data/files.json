@@ -1,0 +1,16 @@
+{
+  "name": "files",
+  "path": ".\\tests\\files",
+  "file_data": [
+    {
+      "name": "a.txt",
+      "path": ".\\tests\\files\\a.txt",
+      "sha1": "a9993e364706816aba3e25717850c26c9cd0d89d"
+    },
+    {
+      "name": "b.txt",
+      "path": ".\\tests\\files\\dir\\b.txt",
+      "sha1": "d9f0509fb7e8bd7d4c4b627dfec70c0c0e01fb34"
+    }
+  ]
+}

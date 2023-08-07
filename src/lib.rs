@@ -9,6 +9,8 @@ use walkdir::WalkDir;
 
 pub mod setting;
 
+use setting::{Filesdir, ServerConfig};
+
 #[derive(Serialize, Deserialize)]
 pub struct FilePatcher {
     pub name: String,
@@ -17,20 +19,14 @@ pub struct FilePatcher {
 }
 
 impl FilePatcher {
-    /// 新建实例
-    pub fn new(name: String, path: &PathBuf) -> FilePatcher {
-        let dir_list: Vec<PathBuf> = Self::dir_list(&path);
-
-        let mut file_data: Vec<FileData> = Vec::new();
-
-        for dir in dir_list {
-            let mut p: Vec<FileData> = Self::iter_path(dir);
-            file_data.append(&mut p);
-        }
+    /// 一个文件夹
+    pub fn new(filesdir: Filesdir) -> FilePatcher {
+        let dir: PathBuf = PathBuf::from(filesdir.path).iter().collect();
+        let file_data: Vec<FileData> = Self::iter_path(dir.clone());
 
         FilePatcher {
-            name,
-            path: path.to_path_buf(),
+            name: filesdir.name,
+            path: dir,
             file_data,
         }
     }
@@ -40,23 +36,6 @@ impl FilePatcher {
         fs::write(path, json_string).unwrap();
     }
 
-    /// 寻找包括 INCLUDE 的文件夹
-    /// -> Vec<PathBuf>
-    fn dir_list(path: &PathBuf) -> Vec<PathBuf> {
-        let pattern: PathBuf = path.join("**/INCLUDE");
-
-        let mut dirs: Vec<PathBuf> = Vec::new();
-        for e in glob(pattern.to_str().unwrap())
-            .unwrap()
-            .filter_map(Result::ok)
-        {
-            let files_path: PathBuf = e.as_path().parent().unwrap().to_owned();
-            dirs.push(files_path);
-        }
-
-        dirs
-    }
-
     /// 遍历指定路径，返回路径下所有文件的信息
     /// -> Vec<FileData>
     fn iter_path(path: PathBuf) -> Vec<FileData> {
@@ -64,9 +43,6 @@ impl FilePatcher {
 
         for e in WalkDir::new(path) {
             let e: PathBuf = e.unwrap().into_path();
-            if e.file_name().unwrap() == "INCLUDE" {
-                continue;
-            }
             if e.is_file() {
                 file_data.push(FileData::new(e))
             }
@@ -85,6 +61,7 @@ pub struct FileData {
 impl FileData {
     fn new(path: PathBuf) -> FileData {
         let name: String = path.file_name().unwrap().to_owned().into_string().unwrap();
+        let path = path.iter().collect();
         let sha1: String = Self::calculate_sha1(&path);
         FileData { name, path, sha1 }
     }

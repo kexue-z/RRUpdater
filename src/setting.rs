@@ -28,18 +28,8 @@ impl ServerConfig {
         from_str(&f).unwrap()
     }
 
-    pub fn generate_server_config(path: &Path) {
-        let config = ServerConfig {
-            server: Server {
-                port: Some(1234),
-                key: "test".to_string(),
-                files: vec![Filesdir {
-                    name: "files".to_string(),
-                    path: "./tests/files".to_string(),
-                }],
-            },
-        };
-        let toml = toml::to_string(&config).unwrap();
+    pub fn generate_server_config(self, path: &Path) {
+        let toml = toml::to_string(&self).unwrap();
         fs::write(path, toml).unwrap();
     }
 }
