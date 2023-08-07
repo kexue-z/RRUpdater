@@ -1,6 +1,5 @@
 use crypto::digest::Digest;
 use crypto::sha1::Sha1;
-use glob::glob;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::{BufReader, Read};
@@ -9,7 +8,7 @@ use walkdir::WalkDir;
 
 pub mod setting;
 
-use setting::{Filesdir, ServerConfig};
+use setting::Filesdir;
 
 #[derive(Serialize, Deserialize)]
 pub struct FilePatcher {
