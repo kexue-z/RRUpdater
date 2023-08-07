@@ -1,0 +1,7 @@
+[server]
+port = 1234
+key = "test"
+
+[[server.files]]
+name = "files"
+path = "./tests/files"
