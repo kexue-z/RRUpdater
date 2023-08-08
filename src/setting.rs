@@ -24,8 +24,14 @@ pub struct Filesdir {
 
 impl ServerConfig {
     pub fn load_server_config(path: &Path) -> ServerConfig {
-        let f = fs::read_to_string(path).expect("File to read config file");
-        from_str(&f).unwrap()
+        let f = fs::read_to_string(path);
+        match f {
+            Ok(s) => from_str(&s).unwrap(),
+            Err(_) => {
+                // 如无 Server.toml 则新建
+                Self::default()
+            }
+        }
     }
 
     pub async fn async_load_server_config(
@@ -36,8 +42,15 @@ impl ServerConfig {
         Ok(server_config)
     }
 
-    pub fn generate_server_config(self, path: &Path) {
+    pub fn generate_server_config(&self, path: &Path) {
         let toml = toml::to_string(&self).unwrap();
         fs::write(path, toml).unwrap();
+    }
+
+    pub fn default() -> ServerConfig {
+        ServerConfig {
+            data_path: "./data".to_string(),
+            server: Server { files: vec![] },
+        }
     }
 }

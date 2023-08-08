@@ -6,6 +6,7 @@ use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
+pub mod helper;
 pub mod setting;
 
 use setting::Filesdir;

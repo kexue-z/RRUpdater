@@ -62,6 +62,18 @@ async fn files_list(name: &str) -> Json<ListApi> {
     }
 }
 
+async fn init() {
+    // 读取配置
+    let config_path = Path::new("./Server.toml");
+    if config_path.exists() {
+        ServerConfig::load_server_config(config_path);
+    } else {
+        use file_patcher::helper::init_dir;
+
+        init_dir();
+    }
+}
+
 #[get("/update")]
 async fn update() -> Json<UpdateApi> {
     update_hash().await;
@@ -70,6 +82,8 @@ async fn update() -> Json<UpdateApi> {
 
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
+    init().await;
+
     let _rocket = rocket::build()
         .mount("/", routes![index, files, files_list, update])
         .launch()
