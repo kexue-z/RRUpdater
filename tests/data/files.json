@@ -11,6 +11,11 @@
       "name": "b.txt",
       "path": ".\\tests\\files\\dir\\b.txt",
       "sha1": "d9f0509fb7e8bd7d4c4b627dfec70c0c0e01fb34"
+    },
+    {
+      "name": "test.zip",
+      "path": ".\\tests\\files\\test.zip",
+      "sha1": "042e933426c8bb9ffea1ac2669fea07baaa4a6ff"
     }
   ]
 }

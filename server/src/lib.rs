@@ -39,9 +39,11 @@ pub async fn update_hash() {
 
     let file = config.server.files;
 
+    let data_path = config.data_path;
+
     for f in file {
         let name = f.name.clone();
-        let path = format!("./file_patcher_data/{}.json", name);
+        let path = format!("{}/{}.json", data_path, name);
         let patcher = FilePatcher::new(f);
         let path = Path::new(&path);
         patcher.save_file_patcher_data(&path);

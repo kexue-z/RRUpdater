@@ -5,6 +5,7 @@ use rocket::fs::NamedFile;
 use rocket::serde::json::Json;
 use rocket::tokio::fs;
 
+use file_patcher::setting::ServerConfig;
 use file_patcher::FilePatcher;
 
 use server::{get_files_path, update_hash};
@@ -33,7 +34,12 @@ async fn files(name: &str, file: PathBuf) -> Option<NamedFile> {
 
 #[get("/list/<name>")]
 async fn files_list(name: &str) -> Json<ListApi> {
-    let path = format!("./file_patcher_data/{}.json", name);
+    let config = ServerConfig::async_load_server_config(Path::new("Server.toml"))
+        .await
+        .unwrap();
+
+    let data_path = config.data_path;
+    let path = format!("{}/{}.json", data_path, name);
     let file_path = Path::new(path.as_str());
 
     let file_content = fs::read_to_string(file_path).await;
