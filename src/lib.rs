@@ -32,6 +32,7 @@ impl FilePatcher {
 
     pub fn save_file_patcher_data(&self, path: &Path) {
         let json_string = serde_json::to_string_pretty(&self).unwrap();
+
         fs::write(path, json_string).unwrap();
     }
 

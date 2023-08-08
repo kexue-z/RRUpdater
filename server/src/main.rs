@@ -7,8 +7,8 @@ use rocket::tokio::fs;
 
 use file_patcher::FilePatcher;
 
-use server::get_files_path;
-use server::ListApi;
+use server::{get_files_path, update_hash};
+use server::{ListApi, UpdateApi};
 
 use std::path::{Path, PathBuf};
 
@@ -56,10 +56,16 @@ async fn files_list(name: &str) -> Json<ListApi> {
     }
 }
 
+#[get("/update")]
+async fn update() -> Json<UpdateApi> {
+    update_hash().await;
+    Json(UpdateApi { retult: 1 })
+}
+
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
     let _rocket = rocket::build()
-        .mount("/", routes![index, files, files_list])
+        .mount("/", routes![index, files, files_list, update])
         .launch()
         .await?;
 
