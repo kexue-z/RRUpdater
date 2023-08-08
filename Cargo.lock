@@ -244,6 +244,7 @@ dependencies = [
  "rust-crypto",
  "serde",
  "serde_json",
+ "tokio",
  "toml",
  "walkdir",
 ]
@@ -1106,6 +1107,7 @@ version = "0.1.0"
 dependencies = [
  "file_patcher",
  "rocket",
+ "serde_json",
 ]
 
 [[package]]
