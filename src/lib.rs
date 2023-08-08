@@ -48,6 +48,10 @@ impl FilePatcher {
         }
         file_data
     }
+
+    pub fn read_json(raw_json: &str) -> FilePatcher {
+        serde_json::from_str(raw_json).unwrap()
+    }
 }
 
 #[derive(Serialize, Deserialize)]
