@@ -2,11 +2,12 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 
 use std::path::Path;
-use tokio::fs::read_to_string;
+use tokio::fs::read_to_string as a_read_to_string;
 use toml::from_str;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct ServerConfig {
+    pub data_path: String,
     pub server: Server,
 }
 
@@ -30,7 +31,7 @@ impl ServerConfig {
     pub async fn async_load_server_config(
         path: &Path,
     ) -> Result<ServerConfig, Box<dyn std::error::Error>> {
-        let file_content = read_to_string(path).await?;
+        let file_content = a_read_to_string(path).await?;
         let server_config = from_str(&file_content)?;
         Ok(server_config)
     }

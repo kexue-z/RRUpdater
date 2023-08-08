@@ -1,0 +1,9 @@
+data_path = "./tests/data"
+
+[[server.files]]
+name = "files"
+path = "./tests/files"
+
+[[server.files]]
+name = "files1"
+path = "./tests/files1"
