@@ -7,6 +7,7 @@ mod tests {
         use std::path::Path;
 
         let config = ServerConfig {
+            data_path: "./tests/data".to_string(),
             server: Server {
                 files: vec![
                     Filesdir {
@@ -21,7 +22,7 @@ mod tests {
             },
         };
 
-        config.generate_server_config(Path::new("./tests/server.toml"));
+        config.generate_server_config(Path::new("./tests/Server.toml"));
     }
 
     #[test]
@@ -30,9 +31,10 @@ mod tests {
         use file_patcher::setting::{Filesdir, Server, ServerConfig};
         use std::path::Path;
 
-        let config = ServerConfig::load_server_config(Path::new("./tests/server.toml"));
+        let config = ServerConfig::load_server_config(Path::new("./tests/Server.toml"));
 
         let config_example = ServerConfig {
+            data_path: "./tests/data".to_string(),
             server: Server {
                 files: vec![
                     Filesdir {
