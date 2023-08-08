@@ -9,6 +9,7 @@ use toml::from_str;
 pub struct ServerConfig {
     pub data_path: String,
     pub server: Server,
+    pub key: String,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -51,6 +52,7 @@ impl ServerConfig {
         ServerConfig {
             data_path: "./data".to_string(),
             server: Server { files: vec![] },
+            key: "".to_string(),
         }
     }
 }

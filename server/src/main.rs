@@ -13,6 +13,8 @@ use server::{ListApi, UpdateApi};
 
 use std::path::{Path, PathBuf};
 
+const CONFIG_PATH: &'static str = "./Server.toml";
+
 #[get("/")]
 async fn index() -> &'static str {
     "Hello, world!"
@@ -34,7 +36,7 @@ async fn files(name: &str, file: PathBuf) -> Option<NamedFile> {
 
 #[get("/list/<name>")]
 async fn files_list(name: &str) -> Json<ListApi> {
-    let config = ServerConfig::async_load_server_config(Path::new("Server.toml"))
+    let config = ServerConfig::async_load_server_config(Path::new(CONFIG_PATH))
         .await
         .unwrap();
 
@@ -64,9 +66,9 @@ async fn files_list(name: &str) -> Json<ListApi> {
 
 async fn init() {
     // 读取配置
-    let config_path = Path::new("./Server.toml");
-    if config_path.exists() {
-        ServerConfig::load_server_config(config_path);
+    let config = Path::new(CONFIG_PATH);
+    if config.exists() {
+        let _ = ServerConfig::async_load_server_config(config).await;
     } else {
         use file_patcher::helper::init_dir;
 
@@ -74,10 +76,17 @@ async fn init() {
     }
 }
 
-#[get("/update")]
-async fn update() -> Json<UpdateApi> {
-    update_hash().await;
-    Json(UpdateApi { retult: 1 })
+#[post("/update?<key>")]
+async fn update(key: String) -> Json<UpdateApi> {
+    let config = ServerConfig::async_load_server_config(Path::new(CONFIG_PATH))
+        .await
+        .unwrap();
+    if config.key == key {
+        update_hash().await;
+        Json(UpdateApi { retult: 1 })
+    } else {
+        Json(UpdateApi { retult: 0 })
+    }
 }
 
 #[rocket::main]

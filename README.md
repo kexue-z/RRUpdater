@@ -8,21 +8,33 @@
 - 提供API接口，可获取获取文件，获取元数据
 
 
-
 ### TOML设置
-与主文件同级
+`Server.toml` 与主文件同级
 ```toml
-[server]
-port = 1234
-key = "test"
+data_path = "./tests/data"
+key = "abc"
 
 [[server.files]]
 name = "files"
 path = "./tests/files"
 
+[[server.files]]
+name = "files1"
+path = "./tests/files1"
 ```
 
-### json 文件格式
+`Rocket.toml` 与主文件同级
+```toml
+[default]
+address = "0.0.0.0"
+port = 8520
+workers = 16
+max_blocking = 512
+keep_alive = 5
+log_level = "normal"
+```
+
+### SHA json 文件格式
 路径使用相对路径
 ```json
 [
@@ -38,6 +50,12 @@ path = "./tests/files"
     }
 ]
 ```
+
+### API
+
+- POST: `/update?key=abc` 更新SHA
+- GET: `/list/<name>` 列出相应名称的SHA数据
+- GET: `<name>/<fils>` 获取文件
 
 ## 客户端
 

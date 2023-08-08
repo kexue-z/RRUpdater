@@ -1,4 +1,5 @@
 data_path = "./tests/data"
+key = "abc"
 
 [[server.files]]
 name = "files"
