@@ -1,15 +1,15 @@
 #[allow(unused_imports)]
-use log::{debug, error, info};
+use log::{debug, error, info, warn};
 
 use std::thread::sleep;
 use std::time::Duration;
 
 pub fn countdown(seconds: u32) {
     for i in (1..=seconds).rev() {
-        info!("Remaining time: {} seconds", i);
+        warn!("将会在 {} 秒后退出", i);
         sleep(Duration::from_secs(1));
     }
-    info!("Countdown complete!");
+    info!("退出");
 }
 
 pub fn setup_logger() -> Result<(), fern::InitError> {
