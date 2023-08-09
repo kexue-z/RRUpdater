@@ -56,7 +56,7 @@ impl FilePatcher {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct FileData {
     pub name: String,
     pub path: PathBuf,

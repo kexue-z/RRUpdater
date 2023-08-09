@@ -3,10 +3,12 @@ use log::{debug, error, info};
 
 use file_patcher::setting::{ClientConfig, Filesdir, Sync};
 use file_patcher::FilePatcher;
-use reqwest::blocking::Client;
+use reqwest::blocking::Client as WebClient;
 use std::fs;
 use std::path::Path;
 use url::Url;
+
+pub mod utils;
 
 pub fn get_client_config(path: Option<&Path>) -> ClientConfig {
     let config = match path {
@@ -31,27 +33,33 @@ pub fn get_client_config(path: Option<&Path>) -> ClientConfig {
     config
 }
 
-pub fn get_files_list(base_url: Url) {
-    let url = base_url.join("list").unwrap();
-    let client = Client::new();
+pub fn get_files_list(base_url: Url, config: &ClientConfig) {
+    let client = WebClient::new();
 
-    let res = client.post(url).send();
-    match res {
-        Ok(r) => {
-            debug!("{:?}", r);
-        }
-        Err(e) => {
-            error!("{:?}", e);
+    let sync_list = &config.sync;
+    for i in sync_list {
+        let name = i.name.as_str();
+        let url = base_url.join(&format!("list/{}", name)).unwrap();
+
+        debug!("Requ url: {}", &url);
+        let res = client.get(url).send();
+        match res {
+            Ok(r) => {
+                debug!("{:?}", r);
+            }
+            Err(e) => {
+                error!("{:?}", e);
+            }
         }
     }
 }
 
-pub fn update_file(sync: Sync, data_path: &Path) {
+pub fn update_file(sync: &Sync, data_path: &Path) {
     let name = sync.name.clone();
     info!("生成 {} 的数据", &sync.name);
     let fp = FilePatcher::new(Filesdir {
-        name: sync.name,
-        path: sync.to_path,
+        name: sync.name.clone(),
+        path: sync.to_path.clone(),
     });
 
     if !data_path.exists() {

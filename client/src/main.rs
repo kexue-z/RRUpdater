@@ -9,6 +9,7 @@ use clap::{Parser, Subcommand};
 use client::{get_client_config, get_files_list, update_file};
 use std::path::{Path, PathBuf};
 use url::Url;
+
 use utils::{countdown, setup_logger};
 
 #[derive(Parser)]
@@ -68,11 +69,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    let key = config.client.key;
+    let key = config.client.key.clone();
 
     let data_path = Path::new(&config.client.data_path);
 
-    let syncs = config.sync;
+    let syncs = &config.sync;
 
     match cli.no_run {
         0 => {
@@ -89,6 +90,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             warn!("跳过 SHA 计算");
         }
     }
+
+    get_files_list(host, &config);
 
     Ok(())
 }
