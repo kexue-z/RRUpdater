@@ -1,66 +1,83 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
+mod utils;
 
-use eframe::egui;
+#[allow(unused_imports)]
+use log::{debug, error, info};
 
-fn main() -> Result<(), eframe::Error> {
-    env_logger::init(); // Log to stderr (if you run with `RUST_LOG=debug`).
+use clap::{Parser, Subcommand};
 
-    let options = eframe::NativeOptions {
-        initial_window_size: Some(egui::vec2(320.0, 240.0)),
-        resizable: false,
-        ..Default::default()
-    };
-    eframe::run_native(
-        "file-patcher-client",
-        options,
-        Box::new(|cc| Box::new(MyApp::new(cc))),
-    )
+use client::get_client_config;
+use std::path::{Path, PathBuf};
+use utils::{countdown, setup_logger};
+
+#[derive(Parser)]
+#[command(name = "FilePatcher Client")]
+#[command(author = "kexue <xana278@foxmail.com>")]
+#[command(version)]
+#[command(about = "从服务端同步文件到本地", long_about = None)]
+struct Cli {
+    /// 指定配置文件
+    #[arg(short, long, value_name = "FILE")]
+    config: Option<PathBuf>,
+
+    /// DEBUG 模式
+    #[arg(short, long, action = clap::ArgAction::Count)]
+    debug: u8,
+
+    /// 操作
+    #[command(subcommand)]
+    command: Option<Commands>,
 }
 
-struct MyApp {}
+#[derive(Subcommand)]
+enum Commands {
+    /// 请求服务器进行更新
+    UpdateServer {
+        /// 服务器 key
+        #[arg(short, long, value_name = "KEY")]
+        key: String,
+    },
+    /// 更新文件
+    Update {},
+}
 
-impl MyApp {
-    fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        setup_custom_fonts(&cc.egui_ctx);
-        Self {}
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    setup_logger()?;
+
+    let cli = Cli::parse();
+
+    let config = get_client_config(cli.config.as_deref());
+    // if let Some(config_path<'a>) = cli.config.as_deref() {
+    //     let config_path = config_path;
+    //     info!("从 {} 中读取配置...", config_path.display());
+    // } else {
+    //     let config_path = Path::new("Client.toml");
+    //     info!("使用默认配置 Client.toml")
+    // }
+
+    // let config = get_client_config(config_path);
+
+    // You can see how many times a particular flag or argument occurred
+    // Note, only flags can have multiple occurrences
+    match cli.debug {
+        0 => info!("Debug mode is OFF"),
+        1 => debug!("Debug mode is on"),
+        _ => error!("What r u doing?"),
     }
-}
 
-impl eframe::App for MyApp {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        egui::CentralPanel::default().show(ctx, |ui| {
-            if ui.button("检查更新").clicked() {
-                // 更新
-            }
-        });
-    }
-}
+    // You can check for the existence of subcommands, and if found use their
+    // matches just as you would the top level cmd
+    // match &cli {
+    //     Some(Commands::Test { list }) => {
+    //         if *list {
+    //             info!("Printing testing lists...");
+    //         } else {
+    //             info!("Not printing testing lists...");
+    //         }
+    //     }
+    //     None => {}
+    // }
+    countdown(3);
 
-fn setup_custom_fonts(ctx: &egui::Context) {
-    // Start with the default fonts (we will be adding to them rather than replacing them).
-    let mut fonts = egui::FontDefinitions::default();
-
-    // Install my own font (maybe supporting non-latin characters).
-    // .ttf and .otf files supported.
-    fonts.font_data.insert(
-        "my_font".to_owned(),
-        egui::FontData::from_static(include_bytes!("C:\\Windows\\Fonts\\msyh.ttc")),
-    );
-
-    // Put my font first (highest priority) for proportional text:
-    fonts
-        .families
-        .entry(egui::FontFamily::Proportional)
-        .or_default()
-        .insert(0, "my_font".to_owned());
-
-    // Put my font as last fallback for monospace:
-    fonts
-        .families
-        .entry(egui::FontFamily::Monospace)
-        .or_default()
-        .push("my_font".to_owned());
-
-    // Tell egui to use these fonts:
-    ctx.set_fonts(fonts);
+    // Continued program logic goes here...
+    Ok(())
 }

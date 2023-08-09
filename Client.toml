@@ -1,0 +1,12 @@
+[client]
+host = "127.0.0.1"
+key = "abc"
+data_path = "./tests/client_data"
+
+[[sync]]
+name = "files"
+to_path = "./tests/files"
+
+[[sync]]
+name = "files1"
+to_path = "./tests/files1"
