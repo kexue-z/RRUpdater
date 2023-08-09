@@ -64,14 +64,14 @@ log_level = "normal"
 ```toml
 [client]
 host = "127.0.0.1"
-port = 1234
-key = "abcd"
+key = "abc"
+data_path = "./tests/client_data"
 
-[[files]]
-name = "abc"
-to_path = "D:\\Path"
+[[sync]]
+name = "files"
+to_path = "./tests/files"
 
-[[files]]
-name = "cba"
-to_path = "abc\\cba"
+[[sync]]
+name = "files1"
+to_path = "./tests/files1"
 ```
