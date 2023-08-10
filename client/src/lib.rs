@@ -4,6 +4,7 @@ use log::{debug, error, info};
 use file_patcher::setting::{ClientConfig, Filesdir, Sync};
 use file_patcher::FilePatcher;
 use reqwest::blocking::Client as WebClient;
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
 use url::Url;
@@ -37,6 +38,7 @@ pub fn get_files_list(base_url: Url, config: &ClientConfig) {
     let client = WebClient::new();
 
     let sync_list = &config.sync;
+
     for i in sync_list {
         let name = i.name.as_str();
         let url = base_url.join(&format!("list/{}", name)).unwrap();
@@ -45,7 +47,10 @@ pub fn get_files_list(base_url: Url, config: &ClientConfig) {
         let res = client.get(url).send();
         match res {
             Ok(r) => {
-                debug!("{:?}", r);
+                // debug!("{:?}", r.text());
+                let server_fp = r.json::<ListApi>().unwrap();
+                // 读取本地
+                debug!("{:?}", server_fp);
             }
             Err(e) => {
                 error!("{:?}", e);
@@ -70,4 +75,15 @@ pub fn update_file(sync: &Sync, data_path: &Path) {
     let _data_path = &data_path.join(format!("{}.json", name));
     info!("保存生成文件位于 -> {}", _data_path.display());
     fp.save_file_patcher_data(_data_path);
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ListApi {
+    pub result: u8,
+    pub content: Option<FilePatcher>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct UpdateApi {
+    pub retult: u8,
 }

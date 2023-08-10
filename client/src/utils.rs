@@ -13,7 +13,7 @@ pub fn countdown(seconds: u32) {
     info!("退出");
 }
 
-pub fn setup_logger() -> Result<(), fern::InitError> {
+pub fn setup_logger(log_level: log::LevelFilter) -> Result<(), fern::InitError> {
     fern::Dispatch::new()
         .format(|out, message, record| {
             out.finish(format_args!(
@@ -23,7 +23,7 @@ pub fn setup_logger() -> Result<(), fern::InitError> {
                 message
             ))
         })
-        .level(log::LevelFilter::Debug)
+        .level(log_level)
         .chain(std::io::stdout())
         .chain(fern::log_file("output.log")?)
         .apply()?;

@@ -11,7 +11,7 @@ pub mod setting;
 
 use setting::Filesdir;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct FilePatcher {
     pub name: String,
     pub path: PathBuf,
@@ -56,7 +56,7 @@ impl FilePatcher {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct FileData {
     pub name: String,
     pub path: PathBuf,

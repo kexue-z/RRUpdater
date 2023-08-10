@@ -7,6 +7,7 @@ use log::{debug, error, info};
 use clap::{Parser, Subcommand};
 
 use client::{get_client_config, get_files_list, update_file};
+use log::LevelFilter;
 use std::path::{Path, PathBuf};
 use url::Url;
 
@@ -48,13 +49,21 @@ enum Commands {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    setup_logger()?;
     let cli = Cli::parse();
 
     match cli.debug {
-        0 => info!("Debug mode is OFF"),
-        1 => debug!("Debug mode is on"),
-        _ => error!("What r u doing?"),
+        0 => {
+            setup_logger(LevelFilter::Info)?;
+            info!("Debug mode is OFF");
+        }
+        1 => {
+            setup_logger(LevelFilter::Debug)?;
+            debug!("Debug mode is on");
+        }
+        _ => {
+            setup_logger(LevelFilter::Debug)?;
+            error!("What r u doing?");
+        }
     }
 
     let config = get_client_config(cli.config.as_deref());

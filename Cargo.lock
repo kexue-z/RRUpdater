@@ -267,6 +267,7 @@ dependencies = [
  "file_patcher",
  "log",
  "reqwest",
+ "serde",
  "serde_json",
  "url",
 ]
