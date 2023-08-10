@@ -8,6 +8,7 @@ mod tests {
 
         let config = ServerConfig {
             data_path: "./tests/data".to_string(),
+            key: "abc".to_string(),
             server: Server {
                 files: vec![
                     Filesdir {
@@ -35,6 +36,7 @@ mod tests {
 
         let config_example = ServerConfig {
             data_path: "./tests/data".to_string(),
+            key: "abc".to_string(),
             server: Server {
                 files: vec![
                     Filesdir {
