@@ -13,21 +13,21 @@ mod tests {
             path: Path::new("a").to_path_buf(),
             file_data: vec![
                 FileData {
-                    name: "ff1".to_string(),
-                    path: Path::new("a/1").to_path_buf(),
+                    name: "ff1.txt".to_string(),
+                    path: Path::new("ff1.txt").to_path_buf(),
                     sha1: "abc".to_string(),
                 },
                 FileData {
-                    name: "ff2".to_string(),
-                    path: Path::new("a/2").to_path_buf(),
+                    name: "ff2.txt".to_string(),
+                    path: Path::new("ff2.txt").to_path_buf(),
                     sha1: "cba".to_string(),
                 },
             ],
         };
 
         let missing_item = FileData {
-            name: "ff1".to_string(),
-            path: Path::new("a/1").to_path_buf(),
+            name: "ff1.txt".to_string(),
+            path: Path::new("ff1.txt").to_path_buf(),
             sha1: "abc".to_string(),
         };
 
@@ -35,8 +35,8 @@ mod tests {
             name: "1".to_string(),
             path: Path::new("a").to_path_buf(),
             file_data: vec![FileData {
-                name: "ff2".to_string(),
-                path: Path::new("a/2").to_path_buf(),
+                name: "ff2.txt".to_string(),
+                path: Path::new("ff2.txt").to_path_buf(),
                 sha1: "cba".to_string(),
             }],
         };
@@ -57,15 +57,15 @@ mod tests {
             name: "1".to_string(),
             path: Path::new("a").to_path_buf(),
             file_data: vec![FileData {
-                name: "ff2".to_string(),
-                path: Path::new("a/2").to_path_buf(),
+                name: "ff2.txt".to_string(),
+                path: Path::new("ff2.txt").to_path_buf(),
                 sha1: "cba".to_string(),
             }],
         };
 
         let surplus_item = FileData {
-            name: "ff1".to_string(),
-            path: Path::new("a/1").to_path_buf(),
+            name: "ff1.txt".to_string(),
+            path: Path::new("ff1.txt").to_path_buf(),
             sha1: "abc".to_string(),
         };
 
@@ -74,13 +74,13 @@ mod tests {
             path: Path::new("a").to_path_buf(),
             file_data: vec![
                 FileData {
-                    name: "ff1".to_string(),
-                    path: Path::new("a/1").to_path_buf(),
+                    name: "ff1.txt".to_string(),
+                    path: Path::new("ff1.txt").to_path_buf(),
                     sha1: "abc".to_string(),
                 },
                 FileData {
-                    name: "ff2".to_string(),
-                    path: Path::new("a/2").to_path_buf(),
+                    name: "ff2.txt".to_string(),
+                    path: Path::new("ff2.txt").to_path_buf(),
                     sha1: "cba".to_string(),
                 },
             ],
@@ -103,27 +103,27 @@ mod tests {
             path: Path::new("a").to_path_buf(),
             file_data: vec![
                 FileData {
-                    name: "ff2".to_string(),
-                    path: Path::new("a/2").to_path_buf(),
+                    name: "ff2.txt".to_string(),
+                    path: Path::new("ff2.txt").to_path_buf(),
                     sha1: "cba".to_string(),
                 },
                 FileData {
-                    name: "ff3".to_string(),
-                    path: Path::new("a/3").to_path_buf(),
+                    name: "ff3.txt".to_string(),
+                    path: Path::new("ff3.txt").to_path_buf(),
                     sha1: "dfg".to_string(),
                 },
             ],
         };
 
         let surplus_item = FileData {
-            name: "ff1".to_string(),
-            path: Path::new("a/1").to_path_buf(),
+            name: "ff1.txt".to_string(),
+            path: Path::new("ff1.txt").to_path_buf(),
             sha1: "abc".to_string(),
         };
 
         let missing_item = FileData {
-            name: "ff3".to_string(),
-            path: Path::new("a/3").to_path_buf(),
+            name: "ff3.txt".to_string(),
+            path: Path::new("ff3.txt").to_path_buf(),
             sha1: "dfg".to_string(),
         };
 
@@ -132,13 +132,13 @@ mod tests {
             path: Path::new("a").to_path_buf(),
             file_data: vec![
                 FileData {
-                    name: "ff1".to_string(),
-                    path: Path::new("a/1").to_path_buf(),
+                    name: "ff1.txt".to_string(),
+                    path: Path::new("ff1.txt").to_path_buf(),
                     sha1: "abc".to_string(),
                 },
                 FileData {
-                    name: "ff2".to_string(),
-                    path: Path::new("a/2").to_path_buf(),
+                    name: "f2.txt".to_string(),
+                    path: Path::new("f2.txt").to_path_buf(),
                     sha1: "cba".to_string(),
                 },
             ],

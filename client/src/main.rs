@@ -5,7 +5,7 @@ mod utils;
 use crate::downloader::download_files;
 use crate::source::{get_client_config, get_files_list, update_file};
 use crate::utils::{countdown, remove_files, setup_logger};
-use clap::{Parser, Subcommand};
+use clap::Parser;
 use log::LevelFilter;
 use log::{debug, error, info, warn};
 use std::path::{Path, PathBuf};

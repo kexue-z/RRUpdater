@@ -8,10 +8,12 @@ use std::thread::sleep;
 use std::time::Duration;
 use std::{fs, path::Path};
 
+#[derive(Debug)]
 pub struct FPItems {
     pub items: Vec<FPItem>,
 }
 
+#[derive(Debug)]
 pub struct FPItem {
     pub name: String,
     pub base_path: PathBuf,
@@ -44,56 +46,97 @@ pub fn setup_logger(log_level: log::LevelFilter) -> Result<(), fern::InitError> 
     Ok(())
 }
 
-/// 比较两个，获取缺失的 FileData
-/// f1 为基准
-pub fn find_missing_items<'a>(f1: &'a FilePatcher, f2: &'a FilePatcher) -> Vec<FileData> {
-    let mut missing_items: Vec<FileData> = Vec::new();
+// /// 比较两个，获取缺失的 FileData
+// /// f1 为基准
+// pub fn find_missing_items<'a>(f1: &'a FilePatcher, f2: &'a FilePatcher) -> Vec<FileData> {
+//     let mut missing_items: Vec<FileData> = Vec::new();
 
-    let data1 = &f1.file_data;
-    let data2 = &f2.file_data;
+//     let data1 = &f1.file_data;
+//     let data2 = &f2.file_data;
 
-    let sha1s_a: Vec<String> = data1.iter().map(|s| s.sha1.to_owned()).collect();
-    let sha1s_b: Vec<String> = data2.iter().map(|s| s.sha1.to_owned()).collect();
+//     let sha1s_a: Vec<String> = data1.iter().map(|s| s.sha1.to_owned()).collect();
+//     let sha1s_b: Vec<String> = data2.iter().map(|s| s.sha1.to_owned()).collect();
 
-    for sha1 in sha1s_a {
-        if !sha1s_b.contains(&sha1) {
-            let a = data1.iter().find(|s| s.sha1 == sha1).unwrap();
-            missing_items.push(a.clone());
-        }
-    }
+//     for sha1 in sha1s_a {
+//         if !sha1s_b.contains(&sha1) {
+//             let a = data1.iter().find(|s| s.sha1 == sha1).unwrap();
+//             missing_items.push(a.clone());
+//         }
+//     }
 
-    missing_items
-}
+//     missing_items
+// }
 
-/// 比较两个，获取多余的 FileData
-/// f1 为基准
-pub fn find_surplus_items<'a>(f1: &'a FilePatcher, f2: &'a FilePatcher) -> Vec<FileData> {
-    let mut surplus_items: Vec<FileData> = Vec::new();
+// /// 比较两个，获取多余的 FileData
+// /// f1 为基准
+// pub fn find_surplus_items<'a>(f1: &'a FilePatcher, f2: &'a FilePatcher) -> Vec<FileData> {
+//     let mut surplus_items: Vec<FileData> = Vec::new();
 
-    let data1 = &f1.file_data;
-    let data2 = &f2.file_data;
+//     let data1 = &f1.file_data;
+//     let data2 = &f2.file_data;
 
-    // surplus_items.append(&mut data2.clone());
+//     // surplus_items.append(&mut data2.clone());
 
-    let sha1s_a: Vec<String> = data1.iter().map(|s| s.sha1.to_owned()).collect();
-    let sha1s_b: Vec<String> = data2.iter().map(|s| s.sha1.to_owned()).collect();
+//     let sha1s_a: Vec<String> = data1.iter().map(|s| s.sha1.to_owned()).collect();
+//     let sha1s_b: Vec<String> = data2.iter().map(|s| s.sha1.to_owned()).collect();
 
-    for sha1_b in &sha1s_b {
-        for sha1_a in &sha1s_a {
-            if sha1_a == sha1_b {
-                continue;
-            } else {
-                let a = data2
-                    .iter()
-                    .find(|s| s.sha1.to_owned() == sha1_b.to_owned())
-                    .clone()
-                    .unwrap();
-                surplus_items.push(a.clone());
+//     for sha1_b in &sha1s_b {
+//         for sha1_a in &sha1s_a {
+//             if sha1_a == sha1_b {
+//                 continue;
+//             } else {
+//                 let a = data2
+//                     .iter()
+//                     .find(|s| s.sha1.to_owned() == sha1_b.to_owned())
+//                     .clone()
+//                     .unwrap();
+//                 surplus_items.push(a.clone());
+//             }
+//         }
+//     }
+
+//     surplus_items
+// }
+
+pub fn find_differences(a: &[FileData], b: &[FileData]) -> (Vec<FileData>, Vec<FileData>) {
+    let mut missing_files: Vec<FileData> = Vec::new();
+    let mut extra_files: Vec<FileData> = Vec::new();
+
+    // Find missing files in b compared to a
+    for file_a in a {
+        let mut found = false;
+        for file_b in b {
+            if file_a.name == file_b.name
+                && file_a.path == file_b.path
+                && file_a.sha1 == file_b.sha1
+            {
+                found = true;
+                break;
             }
         }
+        if !found {
+            missing_files.push(file_a.clone());
+        }
     }
 
-    surplus_items
+    // Find extra files in b compared to a
+    for file_b in b {
+        let mut found = false;
+        for file_a in a {
+            if file_b.name == file_a.name
+                && file_b.path == file_a.path
+                && file_b.sha1 == file_a.sha1
+            {
+                found = true;
+                break;
+            }
+        }
+        if !found {
+            extra_files.push(file_b.clone());
+        }
+    }
+
+    (missing_files, extra_files)
 }
 
 /// 读取本地保存的数据
@@ -115,15 +158,20 @@ pub fn find_items(base_content: FilePatcher, content: FilePatcher) -> FPItem {
         surplus: vec![],
     };
 
-    // 找到缺失的项目
-    items
-        .missing
-        .append(&mut find_missing_items(&base_content, &content));
+    let (missing_files, extra_files) =
+        find_differences(&base_content.file_data, &content.file_data);
 
-    // 找到多余的项目
-    items
-        .surplus
-        .append(&mut find_surplus_items(&base_content, &content));
+    items.missing = missing_files;
+    items.surplus = extra_files;
+    // // 找到缺失的项目
+    // items
+    //     .missing
+    //     .append(&mut find_missing_items(&base_content, &content));
+
+    // // 找到多余的项目
+    // items
+    //     .surplus
+    //     .append(&mut find_surplus_items(&base_content, &content));
 
     items
 }

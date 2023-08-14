@@ -70,8 +70,11 @@ pub fn get_files_list(base_url: &Url, config: &ClientConfig) -> FPItems {
         }
     }
 
-    // debug!("Missing file list: {:?}", &items.missing);
-    // debug!("Surplus file list: {:?}", &items.surplus);
+    // for item in &items.items {
+    //     debug!("Missing file list: {:?}", &item.missing);
+    //     debug!("Surplus file list: {:?}", &item.surplus);
+    // }
+    debug!("FPItem: {:?}", &items);
 
     items
 }
