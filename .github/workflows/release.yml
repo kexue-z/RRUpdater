@@ -29,7 +29,5 @@ jobs:
       - uses: taiki-e/upload-rust-binary-action@v1
         with:
           bin: server,client
-          tar: unix
-          zip: windows
           asset: README.md
           token: ${{ secrets.GITHUB_TOKEN }}
