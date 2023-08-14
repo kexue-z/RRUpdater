@@ -42,10 +42,10 @@ impl FilePatcher {
     fn iter_path(path: PathBuf) -> Vec<FileData> {
         let mut file_data = Vec::new();
 
-        for e in WalkDir::new(path) {
+        for e in WalkDir::new(&path) {
             let e: PathBuf = e.unwrap().into_path();
             if e.is_file() {
-                file_data.push(FileData::new(e))
+                file_data.push(FileData::new(path.to_path_buf(), e))
             }
         }
         file_data
@@ -64,11 +64,15 @@ pub struct FileData {
 }
 
 impl FileData {
-    fn new(path: PathBuf) -> FileData {
+    fn new(base: PathBuf, path: PathBuf) -> FileData {
         let name: String = path.file_name().unwrap().to_owned().into_string().unwrap();
         let path = path.iter().collect();
         let sha1: String = Self::calculate_sha1(&path);
-        FileData { name, path, sha1 }
+        FileData {
+            name,
+            path: path.strip_prefix(base).unwrap().to_path_buf(),
+            sha1,
+        }
     }
 
     /// # 计算文件Sha1

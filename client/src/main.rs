@@ -1,8 +1,10 @@
+mod downloader;
 mod source;
 mod utils;
 
+use crate::downloader::download_files;
 use crate::source::{get_client_config, get_files_list, update_file};
-use crate::utils::{countdown, download_files, remove_files, setup_logger};
+use crate::utils::{countdown, remove_files, setup_logger};
 use clap::{Parser, Subcommand};
 use log::LevelFilter;
 use log::{debug, error, info, warn};
@@ -25,27 +27,11 @@ struct Cli {
 
     /// 不计算 SHA
     #[arg(short, long, action = clap::ArgAction::SetTrue)]
-    no_run: bool,
+    no_sha: bool,
 
     /// 不对文件进行操作
-    #[arg(short, long, action = clap::ArgAction::SetTrue)]
+    #[arg(long, action = clap::ArgAction::SetTrue)]
     dry_run: bool,
-
-    /// 操作
-    #[command(subcommand)]
-    command: Option<Commands>,
-}
-
-#[derive(Subcommand)]
-enum Commands {
-    /// 请求服务器进行更新
-    UpdateServer {
-        /// 服务器 key
-        #[arg(short, long, value_name = "KEY")]
-        key: String,
-    },
-    /// 更新文件
-    Update {},
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -78,13 +64,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    let _key = config.client.key.clone();
+    #[allow(unused_variables)]
+    let key = config.client.key.clone();
 
     let data_path = Path::new(&config.client.data_path);
 
     let syncs = &config.sync;
 
-    if cli.no_run {
+    if cli.no_sha {
         warn!("跳过 SHA 计算");
     } else {
         if syncs.len() == 0 {
@@ -97,9 +84,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    let files_items = get_files_list(host, &config);
+    let files_items = get_files_list(&host, &config);
     if !cli.dry_run {
         remove_files(&files_items);
+        download_files(host.to_owned(), files_items);
+    } else {
+        warn!("不进行数据更新");
     }
 
     Ok(())

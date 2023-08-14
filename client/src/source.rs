@@ -33,15 +33,12 @@ pub fn get_client_config(path: Option<&Path>) -> ClientConfig {
     config
 }
 
-pub fn get_files_list(base_url: Url, config: &ClientConfig) -> FPItems {
+pub fn get_files_list(base_url: &Url, config: &ClientConfig) -> FPItems {
     let client = WebClient::new();
 
     let sync_list = &config.sync;
 
-    let mut items = FPItems {
-        missing: vec![],
-        surplus: vec![],
-    };
+    let mut items = FPItems { items: vec![] };
 
     for i in sync_list {
         // 遍历每个 Sync 设置
@@ -59,7 +56,7 @@ pub fn get_files_list(base_url: Url, config: &ClientConfig) -> FPItems {
                 debug!("{:?}", &server_fp);
                 match server_fp.content {
                     Some(content) => {
-                        items = compare_and_find(content, name, config);
+                        items.items.push(compare_and_find(content, name, config));
                     }
                     None => {
                         error!("服务端未找到相应配置: {}", &name);
@@ -73,8 +70,8 @@ pub fn get_files_list(base_url: Url, config: &ClientConfig) -> FPItems {
         }
     }
 
-    debug!("Missing file list: {:?}", &items.missing);
-    debug!("Surplus file list: {:?}", &items.surplus);
+    // debug!("Missing file list: {:?}", &items.missing);
+    // debug!("Surplus file list: {:?}", &items.surplus);
 
     items
 }

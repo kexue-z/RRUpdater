@@ -6,7 +6,3 @@ data_path = "./tests/client_data"
 [[sync]]
 name = "files"
 to_path = "./tests/files"
-
-[[sync]]
-name = "files1"
-to_path = "./tests/files1"

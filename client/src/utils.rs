@@ -3,11 +3,18 @@ use file_patcher::setting::ClientConfig;
 use log::{debug, error, info, warn};
 
 use file_patcher::{FileData, FilePatcher};
+use std::path::PathBuf;
 use std::thread::sleep;
 use std::time::Duration;
 use std::{fs, path::Path};
 
 pub struct FPItems {
+    pub items: Vec<FPItem>,
+}
+
+pub struct FPItem {
+    pub name: String,
+    pub base_path: PathBuf,
     pub missing: Vec<FileData>,
     pub surplus: Vec<FileData>,
 }
@@ -100,8 +107,10 @@ fn load_local_file_patcher_data(config: &ClientConfig, name: &str) -> FilePatche
 }
 
 /// 服务端与本地对比文件，获取差异列表
-pub fn find_items(base_content: FilePatcher, content: FilePatcher) -> FPItems {
-    let mut items = FPItems {
+pub fn find_items(base_content: FilePatcher, content: FilePatcher) -> FPItem {
+    let mut items = FPItem {
+        name: content.name.to_owned(),
+        base_path: content.path.to_owned(),
         missing: vec![],
         surplus: vec![],
     };
@@ -119,26 +128,28 @@ pub fn find_items(base_content: FilePatcher, content: FilePatcher) -> FPItems {
     items
 }
 
-pub fn compare_and_find(content: FilePatcher, name: &str, config: &ClientConfig) -> FPItems {
+pub fn compare_and_find(content: FilePatcher, name: &str, config: &ClientConfig) -> FPItem {
     let local_file = load_local_file_patcher_data(&config, &name);
 
     find_items(content, local_file)
 }
 
-pub fn download_files(items: FPItems) {
-    todo!();
-}
-
 pub fn remove_files(items: &FPItems) {
-    let files_list = items.surplus.to_owned();
-    for f in files_list {
-        let r = fs::remove_file(&f.path);
-        match r {
-            Ok(_) => {
-                info!("删除文件 => {}", &f.path.display());
-            }
-            Err(e) => {
-                warn!("删除文件失败 => {} 原因: {}", &f.path.display(), e);
+    for i in &items.items {
+        let files_list = i.surplus.to_owned();
+        let base_path = i.base_path.to_owned();
+
+        for f in files_list {
+            let path = base_path.join(&f.path);
+
+            let r = fs::remove_file(&path);
+            match r {
+                Ok(_) => {
+                    info!("删除文件 => {}", path.display());
+                }
+                Err(e) => {
+                    warn!("删除文件失败 => {} 原因: {}", path.display(), e);
+                }
             }
         }
     }

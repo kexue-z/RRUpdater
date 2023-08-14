@@ -1,16 +1,18 @@
 #[cfg(test)]
 
 mod tests {
+
     #[test]
     fn test_download() {
-        let urls = vec![
-            Url::parse("https://example.com/file1.txt").unwrap(),
-            Url::parse("https://example.com/file2.txt").unwrap(),
-            Url::parse("https://example.com/file3.txt").unwrap(),
-        ];
+        use client::downloader::download_file;
+        use reqwest::Url;
+        use std::path::Path;
 
-        let download_dir = PathBuf::from("/path/to/download/directory");
+        let urls = vec![Url::parse("http://127.0.0.1:8520/files/cellphone.svg").unwrap()];
 
-        download_files(urls, download_dir);
+        let download_dir = Path::new("./abc.svg");
+        urls.into_iter().for_each(|url| {
+            download_file(url, download_dir);
+        });
     }
 }
