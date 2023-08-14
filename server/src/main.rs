@@ -92,6 +92,7 @@ async fn update(key: String) -> Json<UpdateApi> {
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
     init().await;
+    update_hash().await;
 
     let _rocket = rocket::build()
         .mount("/", routes![index, files, files_list, update])
