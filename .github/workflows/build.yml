@@ -37,10 +37,10 @@ jobs:
       - name: upload server
         uses: actions/upload-artifact@v2
         with:
-          path: target/release/server.exe
+          path: target/release/server
           name: server
       - name: upload client
         uses: actions/upload-artifact@v2
         with:
-          path: target/release/client.exe
+          path: target/release/client
           name: client
