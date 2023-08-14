@@ -93,7 +93,7 @@ impl ClientConfig {
     pub fn default() -> ClientConfig {
         ClientConfig {
             client: Client {
-                host: "127.0.0.1".to_string(),
+                host: "http://127.0.0.1:8520".to_string(),
                 data_path: "./data".to_string(),
                 key: "".to_string(),
             },

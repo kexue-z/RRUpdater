@@ -63,7 +63,7 @@ log_level = "normal"
 
 ```toml
 [client]
-host = "127.0.0.1"
+host = "http://127.0.0.1:8520"
 key = "abc"
 data_path = "./tests/client_data"
 

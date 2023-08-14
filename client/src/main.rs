@@ -92,5 +92,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         warn!("不进行数据更新");
     }
 
+    info!("程序运行完成，5秒后自动退出");
+    countdown(5);
     Ok(())
 }
