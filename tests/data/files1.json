@@ -4,7 +4,7 @@
   "file_data": [
     {
       "name": "abc.txt",
-      "path": ".\\tests\\files1\\abc.txt",
+      "path": "abc.txt",
       "sha1": "7c4a8d09ca3762af61e59520943dc26494f8941b"
     }
   ]
