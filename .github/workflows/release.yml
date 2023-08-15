@@ -1,54 +1,95 @@
 name: Release
-
-permissions:
-  contents: write
-
 on:
   push:
     tags:
-      - v*
+      - "v*"
+env:
+  SHORT_NAME: fp
+  CRATE_NAME: file-patcher
 
 jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: taiki-e/create-gh-release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+  compile:
+    name: Compile
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          # Linux
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            release_name: x86_64-linux-musl
+            postfix: ""
+            extra_args: ""
+            cross: true
 
-  build-windows:
-    name: build on windwos
-    runs-on: windows-latest
+          # Windows GNU
+          - os: ubuntu-latest
+            target: x86_64-pc-windows-gnu
+            release_name: x86_64-windows-gnu.exe
+            postfix: ".exe"
+            extra_args: ""
+            cross: true
+
     steps:
       - uses: actions/checkout@v2
+
+      - name: Resume cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ matrix.target }}-release-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            ${{ matrix.target }}-release
+
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - name: build
-        run: cargo build --release --package client --package server
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: |
-            target/release/server.exe
-            target/release/client.exe
+          target: ${{ matrix.target }}
+          override: true
 
-  build-linux:
-    name: build on linux
+      - uses: actions-rs/cargo@v1
+        with:
+          use-cross: ${{ matrix.cross }}
+          command: build
+          args: --release --target ${{ matrix.target }} --package server --package client ${{ matrix.extra_args }}
+
+      - name: Rename binary
+        run: mv target/${{ matrix.target }}/release/server${{ matrix.postfix }} ${{ env.SHORT_NAME }}-server-${{ matrix.release_name }}
+
+      - name: Rename binary
+        run: mv target/${{ matrix.target }}/release/client${{ matrix.postfix }} ${{ env.SHORT_NAME }}-client-${{ matrix.release_name }}
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v2
+        with:
+          name: compile
+          path: |
+            ${{ env.SHORT_NAME }}-server-${{ matrix.release_name }}
+            ${{ env.SHORT_NAME }}-client-${{ matrix.release_name }}
+
+  release:
+    name: Release
+    needs: [compile]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+
+      - name: Download binaries
+        uses: actions/download-artifact@v2
         with:
-          toolchain: stable
-      - name: build
-        run: cargo build --release --package client --package server
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
+          name: compile
+          path: ./packages
+
+      - name: Compress
+        run: bash ./.github/compress.sh
+
+      - name: Github release
+        uses: "marvinpinto/action-automatic-releases@latest"
         with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
           files: |
-            target/release/server
-            target/release/client
+            packages/*
+            LICENSE
