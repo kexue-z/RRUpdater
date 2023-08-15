@@ -1,3 +1,5 @@
+mod utils;
+
 #[macro_use]
 extern crate rocket;
 
@@ -8,8 +10,8 @@ use rocket::tokio::fs;
 use file_patcher::setting::ServerConfig;
 use file_patcher::FilePatcher;
 
-use server::{get_files_path, update_hash};
-use server::{ListApi, UpdateApi};
+use utils::{get_files_path, update_hash};
+use utils::{ListApi, UpdateApi};
 
 use std::path::{Path, PathBuf};
 
