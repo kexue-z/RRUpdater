@@ -19,7 +19,7 @@ jobs:
             release_name: x86_64-linux-gnu
             postfix: ""
             extra_args: ""
-            cross: true
+            cross: false
 
           # Windows GNU
           - os: ubuntu-latest
