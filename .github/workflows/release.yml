@@ -4,8 +4,7 @@ on:
     tags:
       - "v*"
 env:
-  SHORT_NAME: fp
-  CRATE_NAME: file-patcher
+  CRATE_NAME: rr_updater
 
 jobs:
   compile:
@@ -16,8 +15,8 @@ jobs:
         include:
           # Linux
           - os: ubuntu-latest
-            target: x86_64-unknown-linux-musl
-            release_name: x86_64-linux-musl
+            target: x86_64-unknown-linux-gnu
+            release_name: x86_64-linux-gnu
             postfix: ""
             extra_args: ""
             cross: true
