@@ -1,5 +1,5 @@
-apt-get install zip
-cd packages
+apt-get install -y zip
+cd packages/artifact
 for file in $(ls); do
     name=${file%%.*}
     if [${file##*.} == "exe"]
