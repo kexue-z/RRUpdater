@@ -55,16 +55,17 @@ jobs:
           args: --release --target ${{ matrix.target }} --package server --package client ${{ matrix.extra_args }}
 
       - name: Rename binary
-        run: mv target/${{ matrix.target }}/release/server${{ matrix.postfix }} ./packages/rrus-${{ matrix.release_name }}
+        run: mv target/${{ matrix.target }}/release/server${{ matrix.postfix }} target/${{ matrix.target }}/release/rrus-${{ matrix.release_name }}
 
       - name: Rename binary
-        run: mv target/${{ matrix.target }}/release/client${{ matrix.postfix }} ./packages/rruc-${{ matrix.release_name }}
+        run: mv target/${{ matrix.target }}/release/client${{ matrix.postfix }} target/${{ matrix.target }}/release/rruc-${{ matrix.release_name }}
 
       - name: Upload binaries
         uses: actions/upload-artifact@v2
         with:
           path: |
-            ./packages/
+            target/${{ matrix.target }}/release/rrus-${{ matrix.release_name }}
+            target/${{ matrix.target }}/release/rruc-${{ matrix.release_name }}
 
   release:
     name: Release
