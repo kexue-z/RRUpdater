@@ -11,7 +11,7 @@ pub mod setting;
 
 use setting::Filesdir;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct RUpdater {
     pub name: String,
     pub path: PathBuf,
@@ -22,6 +22,11 @@ impl RUpdater {
     /// 一个文件夹
     pub fn new(filesdir: Filesdir) -> RUpdater {
         let dir: PathBuf = PathBuf::from(filesdir.path).iter().collect();
+        // 如果文件夹不存在，则创建
+        if !dir.exists() {
+            fs::create_dir_all(&dir).unwrap();
+        }
+
         let file_data: Vec<FileData> = Self::iter_path(dir.clone());
 
         RUpdater {

@@ -7,7 +7,7 @@ use rr_updater::setting::{ClientConfig, Filesdir, Sync};
 use rr_updater::RUpdater;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
-use std::{fs, vec};
+// use tempfile::tempdir;
 use url::Url;
 
 pub fn get_client_config(path: Option<&Path>) -> ClientConfig {
@@ -33,7 +33,7 @@ pub fn get_client_config(path: Option<&Path>) -> ClientConfig {
     config
 }
 
-pub fn get_files_list(base_url: &Url, config: &ClientConfig) -> FPItems {
+pub fn get_files_list(base_url: &Url, config: &ClientConfig, local: &RUpdater) -> FPItems {
     let client = WebClient::new();
 
     let sync_list = &config.sync;
@@ -56,7 +56,7 @@ pub fn get_files_list(base_url: &Url, config: &ClientConfig) -> FPItems {
                 debug!("{:?}", &server_fp);
                 match server_fp.content {
                     Some(content) => {
-                        items.items.push(compare_and_find(content, name, config));
+                        items.items.push(compare_and_find(content, local.clone()));
                     }
                     None => {
                         error!("服务端未找到相应配置: {}", &name);
@@ -75,22 +75,25 @@ pub fn get_files_list(base_url: &Url, config: &ClientConfig) -> FPItems {
     items
 }
 
-pub fn update_file(sync: &Sync, data_path: &Path) {
-    let name = sync.name.clone();
+pub fn update_file(sync: &Sync) -> RUpdater {
+    // let name = sync.name.clone();
     info!("生成 {} 的数据", &sync.name);
     let fp = RUpdater::new(Filesdir {
         name: sync.name.clone(),
         path: sync.to_path.clone(),
     });
 
-    if !data_path.exists() {
-        info!("数据目录不存在, 新建目录位于 -> {}", data_path.display());
-        fs::create_dir(data_path).unwrap();
-    }
+    // let tempdir = tempdir().unwrap();
 
-    let _data_path = &data_path.join(format!("{}.json", name));
-    info!("保存生成文件位于 -> {}", _data_path.display());
-    fp.save_updater_data(_data_path);
+    // if !data_path.exists() {
+    //     info!("数据目录不存在, 新建目录位于 -> {}", data_path.display());
+    //     fs::create_dir(data_path).unwrap();
+    // }
+
+    // let _data_path = &tempdir.path().join(format!("{}.json", name));
+    // info!("保存生成文件位于 -> {}", _data_path.display());
+    // fp.save_updater_data(_data_path);
+    fp
 }
 
 #[derive(Serialize, Deserialize, Debug)]

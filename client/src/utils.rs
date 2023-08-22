@@ -1,12 +1,11 @@
 #[allow(unused_imports)]
 use log::{debug, error, info, warn};
 
-use rr_updater::setting::ClientConfig;
 use rr_updater::{FileData, RUpdater};
+use std::fs;
 use std::path::PathBuf;
 use std::thread::sleep;
 use std::time::Duration;
-use std::{fs, path::Path};
 
 #[derive(Debug)]
 pub struct FPItems {
@@ -87,15 +86,16 @@ pub fn find_differences(a: &[FileData], b: &[FileData]) -> (Vec<FileData>, Vec<F
     (missing_files, extra_files)
 }
 
-/// 读取本地保存的数据
-fn load_updater_data(config: &ClientConfig, name: &str) -> RUpdater {
-    let local_file_name = format!("{}.json", &name).as_str().to_owned();
+// / 读取本地保存的数据
+// fn load_updater_data(name: &str) -> RUpdater {
+//     let local_file_name = format!("{}.json", &name).as_str().to_owned();
 
-    let f2 = Path::new(&config.client.data_path).join(local_file_name);
-    let file_content = fs::read_to_string(f2).unwrap();
+//     let tempdir = tempdir().unwrap();
+//     let f2 = tempdir.path().join(local_file_name);
+//     let file_content = fs::read_to_string(f2).unwrap();
 
-    serde_json::from_str(file_content.as_str()).unwrap()
-}
+//     serde_json::from_str(file_content.as_str()).unwrap()
+// }
 
 /// 服务端与本地对比文件，获取差异列表
 pub fn find_items(base_content: RUpdater, content: RUpdater) -> FPItem {
@@ -124,10 +124,10 @@ pub fn find_items(base_content: RUpdater, content: RUpdater) -> FPItem {
     items
 }
 
-pub fn compare_and_find(content: RUpdater, name: &str, config: &ClientConfig) -> FPItem {
-    let local_file = load_updater_data(&config, &name);
+pub fn compare_and_find(content: RUpdater, local: RUpdater) -> FPItem {
+    // let local_file = load_updater_data(&name);
 
-    find_items(content, local_file)
+    find_items(content, local)
 }
 
 pub fn remove_files(items: &FPItems) {

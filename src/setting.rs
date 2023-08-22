@@ -61,7 +61,6 @@ impl ServerConfig {
 pub struct Client {
     pub host: String,
     pub key: String,
-    pub data_path: String,
 }
 
 #[derive(Deserialize, Serialize, Debug)]
@@ -94,7 +93,6 @@ impl ClientConfig {
         ClientConfig {
             client: Client {
                 host: "http://127.0.0.1:8520".to_string(),
-                data_path: "./data".to_string(),
                 key: "".to_string(),
             },
             sync: vec![],
