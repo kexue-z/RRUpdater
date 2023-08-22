@@ -265,9 +265,9 @@ dependencies = [
  "chrono",
  "clap",
  "fern",
- "file_patcher",
  "log",
  "reqwest",
+ "rr_updater",
  "serde",
  "serde_json",
  "url",
@@ -414,18 +414,6 @@ dependencies = [
  "toml",
  "uncased",
  "version_check",
-]
-
-[[package]]
-name = "file_patcher"
-version = "0.1.0"
-dependencies = [
- "rust-crypto",
- "serde",
- "serde_json",
- "tokio",
- "toml",
- "walkdir",
 ]
 
 [[package]]
@@ -1376,6 +1364,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "rr_updater"
+version = "0.1.0"
+dependencies = [
+ "rust-crypto",
+ "serde",
+ "serde_json",
+ "tokio",
+ "toml",
+ "walkdir",
+]
+
+[[package]]
 name = "rust-crypto"
 version = "0.2.36"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1534,8 +1534,8 @@ dependencies = [
 name = "server"
 version = "0.1.0"
 dependencies = [
- "file_patcher",
  "rocket",
+ "rr_updater",
  "serde",
  "serde_json",
  "tokio",

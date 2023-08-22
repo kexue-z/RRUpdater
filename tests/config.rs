@@ -3,7 +3,7 @@ mod tests {
 
     #[test]
     fn test_generate_server_config() {
-        use file_patcher::setting::{Filesdir, Server, ServerConfig};
+        use rr_updater::setting::{Filesdir, Server, ServerConfig};
         use std::path::Path;
 
         let config = ServerConfig {
@@ -29,7 +29,7 @@ mod tests {
     #[test]
     #[allow(unused_variables)]
     fn test_load_server_config() {
-        use file_patcher::setting::{Filesdir, Server, ServerConfig};
+        use rr_updater::setting::{Filesdir, Server, ServerConfig};
         use std::path::Path;
 
         let config = ServerConfig::load_server_config(Path::new("./tests/Server.toml"));

@@ -12,26 +12,26 @@ pub mod setting;
 use setting::Filesdir;
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct FilePatcher {
+pub struct RUpdater {
     pub name: String,
     pub path: PathBuf,
     pub file_data: Vec<FileData>,
 }
 
-impl FilePatcher {
+impl RUpdater {
     /// 一个文件夹
-    pub fn new(filesdir: Filesdir) -> FilePatcher {
+    pub fn new(filesdir: Filesdir) -> RUpdater {
         let dir: PathBuf = PathBuf::from(filesdir.path).iter().collect();
         let file_data: Vec<FileData> = Self::iter_path(dir.clone());
 
-        FilePatcher {
+        RUpdater {
             name: filesdir.name,
             path: dir,
             file_data,
         }
     }
 
-    pub fn save_file_patcher_data(&self, path: &Path) {
+    pub fn save_updater_data(&self, path: &Path) {
         let json_string = serde_json::to_string_pretty(&self).unwrap();
 
         fs::write(path, json_string).unwrap();
@@ -51,7 +51,7 @@ impl FilePatcher {
         file_data
     }
 
-    pub fn read_json(raw_json: &str) -> FilePatcher {
+    pub fn read_json(raw_json: &str) -> RUpdater {
         serde_json::from_str(raw_json).unwrap()
     }
 }

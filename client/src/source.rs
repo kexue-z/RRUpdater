@@ -2,9 +2,9 @@
 use log::{debug, error, info};
 
 use crate::utils::{compare_and_find, FPItems};
-use file_patcher::setting::{ClientConfig, Filesdir, Sync};
-use file_patcher::FilePatcher;
 use reqwest::blocking::Client as WebClient;
+use rr_updater::setting::{ClientConfig, Filesdir, Sync};
+use rr_updater::RUpdater;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 use std::{fs, vec};
@@ -78,7 +78,7 @@ pub fn get_files_list(base_url: &Url, config: &ClientConfig) -> FPItems {
 pub fn update_file(sync: &Sync, data_path: &Path) {
     let name = sync.name.clone();
     info!("生成 {} 的数据", &sync.name);
-    let fp = FilePatcher::new(Filesdir {
+    let fp = RUpdater::new(Filesdir {
         name: sync.name.clone(),
         path: sync.to_path.clone(),
     });
@@ -90,13 +90,13 @@ pub fn update_file(sync: &Sync, data_path: &Path) {
 
     let _data_path = &data_path.join(format!("{}.json", name));
     info!("保存生成文件位于 -> {}", _data_path.display());
-    fp.save_file_patcher_data(_data_path);
+    fp.save_updater_data(_data_path);
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ListApi {
     pub result: u8,
-    pub content: Option<FilePatcher>,
+    pub content: Option<RUpdater>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]

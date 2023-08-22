@@ -1,9 +1,9 @@
 #[cfg(test)]
 mod tests {
     #[test]
-    fn test_filepatcher() {
-        use file_patcher::setting::ServerConfig;
-        use file_patcher::FilePatcher;
+    fn test_updater() {
+        use rr_updater::setting::ServerConfig;
+        use rr_updater::RUpdater;
 
         use std::path::Path;
 
@@ -12,10 +12,10 @@ mod tests {
         for i in config.server.files {
             let file_name = i.name.clone() + ".json";
 
-            let patcher = FilePatcher::new(i);
+            let patcher = RUpdater::new(i);
 
             let path = Path::new("./tests/data/").join(file_name);
-            patcher.save_file_patcher_data(&path);
+            patcher.save_updater_data(&path);
         }
     }
 }

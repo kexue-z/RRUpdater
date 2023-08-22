@@ -1,5 +1,5 @@
-use file_patcher::setting::ServerConfig;
-use file_patcher::FilePatcher;
+use rr_updater::setting::ServerConfig;
+use rr_updater::RUpdater;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 
@@ -24,7 +24,7 @@ pub async fn get_files_path(name: &str) -> String {
 #[derive(Serialize, Deserialize)]
 pub struct ListApi {
     pub result: u8,
-    pub content: Option<FilePatcher>,
+    pub content: Option<RUpdater>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -44,8 +44,8 @@ pub async fn update_hash() {
     for f in file {
         let name = f.name.clone();
         let path = format!("{}/{}.json", data_path, name);
-        let patcher = FilePatcher::new(f);
+        let patcher = RUpdater::new(f);
         let path = Path::new(&path);
-        patcher.save_file_patcher_data(&path);
+        patcher.save_updater_data(&path);
     }
 }

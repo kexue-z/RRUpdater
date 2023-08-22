@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 use url::Url;
 
 #[derive(Parser)]
-#[command(name = "FilePatcher Client")]
+#[command(name = "rr_updater Client")]
 #[command(author = "kexue <xana278@foxmail.com>")]
 #[command(version)]
 #[command(about = "从服务端同步文件到本地", long_about = None)]

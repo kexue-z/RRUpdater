@@ -7,8 +7,8 @@ use rocket::fs::NamedFile;
 use rocket::serde::json::Json;
 use rocket::tokio::fs;
 
-use file_patcher::setting::ServerConfig;
-use file_patcher::FilePatcher;
+use rr_updater::setting::ServerConfig;
+use rr_updater::RUpdater;
 
 use utils::{get_files_path, update_hash};
 use utils::{ListApi, UpdateApi};
@@ -52,7 +52,7 @@ async fn files_list(name: &str) -> Json<ListApi> {
         Ok(content) => {
             let a = ListApi {
                 result: 1,
-                content: Some(FilePatcher::read_json(&content)),
+                content: Some(RUpdater::read_json(&content)),
             };
             Json(a)
         }
@@ -72,7 +72,7 @@ async fn init() {
     if config.exists() {
         let _ = ServerConfig::async_load_server_config(config).await;
     } else {
-        use file_patcher::helper::init_dir;
+        use rr_updater::helper::init_dir;
 
         init_dir();
     }

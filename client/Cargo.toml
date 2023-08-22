@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-file_patcher = { path = "../" }
+rr_updater = { path = "../" }
 chrono = "0.4.26"
 clap = { version = "4.3.21", features = ["derive"] }
 fern = "0.6.2"

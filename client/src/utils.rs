@@ -1,8 +1,8 @@
-use file_patcher::setting::ClientConfig;
 #[allow(unused_imports)]
 use log::{debug, error, info, warn};
 
-use file_patcher::{FileData, FilePatcher};
+use rr_updater::setting::ClientConfig;
+use rr_updater::{FileData, RUpdater};
 use std::path::PathBuf;
 use std::thread::sleep;
 use std::time::Duration;
@@ -88,7 +88,7 @@ pub fn find_differences(a: &[FileData], b: &[FileData]) -> (Vec<FileData>, Vec<F
 }
 
 /// 读取本地保存的数据
-fn load_local_file_patcher_data(config: &ClientConfig, name: &str) -> FilePatcher {
+fn load_updater_data(config: &ClientConfig, name: &str) -> RUpdater {
     let local_file_name = format!("{}.json", &name).as_str().to_owned();
 
     let f2 = Path::new(&config.client.data_path).join(local_file_name);
@@ -98,7 +98,7 @@ fn load_local_file_patcher_data(config: &ClientConfig, name: &str) -> FilePatche
 }
 
 /// 服务端与本地对比文件，获取差异列表
-pub fn find_items(base_content: FilePatcher, content: FilePatcher) -> FPItem {
+pub fn find_items(base_content: RUpdater, content: RUpdater) -> FPItem {
     let mut items = FPItem {
         name: content.name.to_owned(),
         base_path: content.path.to_owned(),
@@ -124,8 +124,8 @@ pub fn find_items(base_content: FilePatcher, content: FilePatcher) -> FPItem {
     items
 }
 
-pub fn compare_and_find(content: FilePatcher, name: &str, config: &ClientConfig) -> FPItem {
-    let local_file = load_local_file_patcher_data(&config, &name);
+pub fn compare_and_find(content: RUpdater, name: &str, config: &ClientConfig) -> FPItem {
+    let local_file = load_updater_data(&config, &name);
 
     find_items(content, local_file)
 }
@@ -156,7 +156,7 @@ mod tests {
     #[test]
     fn test_new_find() {
         use super::find_differences;
-        use file_patcher::FileData;
+        use rr_updater::FileData;
         use std::path::PathBuf;
 
         let a = vec![
