@@ -11,7 +11,7 @@
 
 - 读取 toml 中所指定的目录
 - 遍历该目录下的所有文件，并计算 sha1
-- 保存 sha1 到 json 文件中 `file-patcher-server` 目录下
+- 保存 sha1 到 json 文件中 data_path 目录下
 - 提供 API 接口，可获取获取文件，获取元数据
 
 ### TOML 设置
