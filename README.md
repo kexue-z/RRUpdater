@@ -1,4 +1,4 @@
-# file-patcher
+# rr_updater
 
 以服务端为基准，下载同步本地文件
 
