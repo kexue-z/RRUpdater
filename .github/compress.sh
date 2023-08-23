@@ -2,26 +2,15 @@
 
 cd ./packages
 
-current_dir=$(pwd)
+apt-get install -y zip
 
-for file in "$current_dir"/*; do
-  if [ -f "$file" ]; then
+cd packages
 
-    filename=$(basename "$file")
-    extension="${filename##*.}"
-
-
-    if [ "$extension" == "exe" ]; then
-      target_file="${filename%.exe}.zip"
+for file in $(ls); do
+    name=${file%%.*}
+    if [ "${file##*.}" == "exe" ]; then
+        zip "$name.zip" "$file"
     else
-      target_file="$filename.tar.gz"
+        tar -czvf "$name.tar.gz" "$file"
     fi
-
-    if [ "$extension" == "exe" ]; then
-      zip -q "$target_file" "$file"
-    else
-      tar -czf "$target_file" "$file"
-    fi
-
-  fi
 done
