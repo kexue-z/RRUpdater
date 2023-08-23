@@ -5,3 +5,14 @@ workers = 16
 max_blocking = 512
 keep_alive = 5
 log_level = "normal"
+
+key = "abc"
+data_path = "./tests/data"
+
+[[default.rr_config]]
+name = "files"
+path = "./tests/files"
+
+[[default.rr_config]]
+name = "files1"
+path = "./tests/files1"

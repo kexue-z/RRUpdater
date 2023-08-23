@@ -1,18 +1,19 @@
+mod config;
 mod utils;
 
 #[macro_use]
 extern crate rocket;
 
+use config::ServerConfig;
+use rocket::fairing::AdHoc;
 use rocket::fs::NamedFile;
 use rocket::serde::json::Json;
 use rocket::tokio::{fs, task, time::interval};
-use rr_updater::setting::ServerConfig;
+use rocket::State;
 use rr_updater::RUpdater;
 use std::path::{Path, PathBuf};
-use utils::{get_files_path, update_hash};
+use utils::update_hash;
 use utils::{ListApi, UpdateApi};
-
-const CONFIG_PATH: &'static str = "./Server.toml";
 
 #[get("/")]
 async fn index() -> &'static str {
@@ -21,27 +22,24 @@ async fn index() -> &'static str {
 
 /// 获取文件
 #[get("/<name>/<file..>")]
-async fn files(name: &str, file: PathBuf) -> Option<NamedFile> {
-    let files_path = get_files_path(name).await;
+async fn files(name: &str, file: PathBuf, config: &State<ServerConfig>) -> Option<NamedFile> {
+    let filesdirs_list = &config.rr_config;
 
-    if files_path.len() == 0 {
-        None
-    } else {
-        NamedFile::open(Path::new(&files_path).join(file))
+    let files_dir = filesdirs_list.iter().find(|filesdir| filesdir.name == name);
+
+    match files_dir {
+        Some(name_dir) => NamedFile::open(Path::new(&name_dir.path).join(file))
             .await
-            .ok()
+            .ok(),
+        None => None,
     }
 }
 
 #[get("/list/<name>")]
-async fn files_list(name: &str) -> Json<ListApi> {
-    let config = ServerConfig::async_load_server_config(Path::new(CONFIG_PATH))
-        .await
-        .unwrap();
+async fn files_list(name: &str, config: &State<ServerConfig>) -> Json<ListApi> {
+    let data_path = config.data_path.to_owned();
 
-    let data_path = config.data_path;
-    let path = format!("{}/{}.json", data_path, name);
-    let file_path = Path::new(path.as_str());
+    let file_path = data_path.join(format!("{}.json", name));
 
     let file_content = fs::read_to_string(file_path).await;
 
@@ -63,23 +61,8 @@ async fn files_list(name: &str) -> Json<ListApi> {
     }
 }
 
-async fn init() {
-    // 读取配置
-    let config = Path::new(CONFIG_PATH);
-    if config.exists() {
-        let _ = ServerConfig::async_load_server_config(config).await;
-    } else {
-        use rr_updater::helper::init_dir;
-
-        init_dir();
-    }
-}
-
 #[post("/update?<key>")]
-async fn update(key: String) -> Json<UpdateApi> {
-    let config = ServerConfig::async_load_server_config(Path::new(CONFIG_PATH))
-        .await
-        .unwrap();
+async fn update(key: String, config: &State<ServerConfig>) -> Json<UpdateApi> {
     if config.key == key {
         update_hash().await;
         Json(UpdateApi { retult: 1 })
@@ -88,7 +71,7 @@ async fn update(key: String) -> Json<UpdateApi> {
     }
 }
 
-async fn timeer() {
+async fn timer() {
     let _task = task::spawn(async {
         // 创建一个每隔12小时运行一次的定时器
         let mut interval = interval(std::time::Duration::from_secs(60 * 60 * 12));
@@ -103,12 +86,13 @@ async fn timeer() {
 
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
-    init().await;
+    // init().await;
     // update_hash().await;
-    timeer().await;
+    timer().await;
 
     let _rocket = rocket::build()
         .mount("/", routes![index, files, files_list, update])
+        .attach(AdHoc::config::<ServerConfig>())
         .launch()
         .await?;
 

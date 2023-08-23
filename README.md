@@ -16,21 +16,6 @@
 
 ### TOML 设置
 
-`Server.toml` 与主文件同级
-
-```toml
-data_path = "./tests/data"
-key = "abc"
-
-[[server.files]]
-name = "files"
-path = "./tests/files"
-
-[[server.files]]
-name = "files1"
-path = "./tests/files1"
-```
-
 `Rocket.toml` 与主文件同级
 
 ```toml
@@ -41,25 +26,17 @@ workers = 16
 max_blocking = 512
 keep_alive = 5
 log_level = "normal"
-```
 
-### SHA json 文件格式
+key = "abc"
+data_path = "./tests/data"
 
-路径使用相对路径
+[[default.rr_config]]
+name = "files"
+path = "./tests/files"
 
-```json
-[
-  {
-    "name": "a.txt",
-    "path": "a.txt",
-    "sha1": "abc"
-  },
-  {
-    "name": "b.txt",
-    "path": "dir1/b.txt",
-    "sha1": "cba"
-  }
-]
+[[default.rr_config]]
+name = "files1"
+path = "./tests/files1"
 ```
 
 ### API
