@@ -90,5 +90,6 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            packages/*
+            packages/*.zip
+            packages/*.tar.gz
             LICENSE
