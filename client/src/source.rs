@@ -32,41 +32,40 @@ pub fn get_client_config(path: Option<&Path>) -> ClientConfig {
     config
 }
 
-pub fn get_files_list(base_url: &Url, config: &ClientConfig, local: &RUpdater) -> FPItems {
+pub fn get_files_list(base_url: &Url, sync: &Sync, local: &RUpdater) -> FPItems {
     let client = WebClient::new();
 
-    let sync_list = &config.sync;
+    // let sync_list = &config.sync;
 
     let mut items = FPItems { items: vec![] };
 
-    for i in sync_list {
-        // 遍历每个 Sync 设置
-        let name = i.name.as_str();
-        let url = base_url.join(&format!("list/{}", name)).unwrap();
+    // for i in sync_list {
+    // 遍历每个 Sync 设置
+    let name = sync.name.as_str();
+    let url = base_url.join(&format!("list/{}", name)).unwrap();
 
-        debug!("Requ url: {}", &url);
-        // 发送请求
-        let res = client.get(url).send();
-        match res {
-            Ok(r) => {
-                // 请求成功
-                let server_fp = r.json::<ListApi>().unwrap();
+    debug!("Requ url: {}", &url);
+    // 发送请求
+    let res = client.get(url).send();
+    match res {
+        Ok(r) => {
+            // 请求成功
+            let server_fp = r.json::<ListApi>().unwrap();
 
-                debug!("{:?}", &server_fp);
-                match server_fp.content {
-                    Some(content) => {
-                        items.items.push(compare_and_find(content, local.clone()));
-                    }
-                    None => {
-                        error!("服务端未找到相应配置: {}", &name);
-                    }
+            debug!("{:?}", &server_fp);
+            match server_fp.content {
+                Some(content) => {
+                    items.items.push(compare_and_find(content, local.clone()));
+                }
+                None => {
+                    error!("服务端未找到相应配置: {}", &name);
                 }
             }
-            Err(e) => {
-                // 请求失败
-                error!("{:?}", e);
-            }
         }
+        Err(e) => {
+            // 请求失败
+            error!("{:?}", e);
+        } // }
     }
 
     debug!("{:?}", &items);

@@ -87,7 +87,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             // 每个配置
             let local = update_file(sync);
 
-            let files_items = get_files_list(&host, &config, &local);
+            let files_items = get_files_list(&host, &sync, &local);
             if !cli.dry_run {
                 remove_files(&files_items);
                 download_files(host.to_owned(), files_items);
