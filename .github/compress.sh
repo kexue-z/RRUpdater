@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# 获取当前目录
-current_dir=$(pwd)
+cd ./packages
 
+current_dir=$(pwd)
 
 for file in "$current_dir"/*; do
   if [ -f "$file" ]; then
@@ -17,7 +17,6 @@ for file in "$current_dir"/*; do
       target_file="$filename.tar.gz"
     fi
 
-    # 压缩文件
     if [ "$extension" == "exe" ]; then
       zip -q "$target_file" "$file"
     else
