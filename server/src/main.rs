@@ -65,9 +65,9 @@ async fn files_list(name: &str, config: &State<ServerConfig>) -> Json<ListApi> {
 async fn update(key: String, config: &State<ServerConfig>) -> Json<UpdateApi> {
     if config.key == key {
         update_hash(config).await;
-        Json(UpdateApi { retult: 1 })
+        Json(UpdateApi { result: 1 })
     } else {
-        Json(UpdateApi { retult: 0 })
+        Json(UpdateApi { result: 0 })
     }
 }
 

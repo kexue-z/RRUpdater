@@ -95,6 +95,27 @@ pub fn update_file(sync: &Sync) -> RUpdater {
     fp
 }
 
+pub fn call_server_update(host: &Url, key: String) {
+    let client = WebClient::new();
+    // let params = [("key", key)];
+    let url = host.join("update").unwrap();
+    let res = client.post(url).query(&[("key", key)]).send();
+
+    match res {
+        Ok(r) => {
+            let result = r.json::<UpdateApi>().unwrap();
+            if result.result == 1 {
+                info!("发送更新请求成功");
+            } else {
+                error!("请检查 key 是否正确");
+            }
+        }
+        Err(e) => {
+            error!("{:?}", e);
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ListApi {
     pub result: u8,
@@ -103,5 +124,5 @@ pub struct ListApi {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateApi {
-    pub retult: u8,
+    pub result: u8,
 }

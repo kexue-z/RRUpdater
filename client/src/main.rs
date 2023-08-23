@@ -4,7 +4,7 @@ mod source;
 mod utils;
 
 use crate::downloader::download_files;
-use crate::source::{get_client_config, get_files_list, update_file};
+use crate::source::{call_server_update, get_client_config, get_files_list, update_file};
 use crate::utils::{countdown, remove_files, setup_logger};
 use clap::Parser;
 use log::LevelFilter;
@@ -33,6 +33,9 @@ struct Cli {
     /// 不对文件进行操作
     #[arg(long, action = clap::ArgAction::SetTrue)]
     dry_run: bool,
+
+    #[arg(short, long, action = clap::ArgAction::SetTrue)]
+    update: bool,
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -65,8 +68,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    #[allow(unused_variables)]
     let key = config.client.key.clone();
+
+    if cli.update {
+        call_server_update(&host, key);
+        return Ok(());
+    }
 
     let syncs = &config.sync;
 

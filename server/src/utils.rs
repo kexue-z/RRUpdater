@@ -13,7 +13,7 @@ pub struct ListApi {
 
 #[derive(Serialize, Deserialize)]
 pub struct UpdateApi {
-    pub retult: u8,
+    pub result: u8,
 }
 
 pub async fn update_hash(config: &State<ServerConfig>) {
