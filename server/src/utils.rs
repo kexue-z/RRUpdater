@@ -1,8 +1,8 @@
+use rocket::tokio::fs;
 use rr_updater::setting::ServerConfig;
 use rr_updater::RUpdater;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
-use tempfile::tempdir;
 
 pub async fn get_files_path(name: &str) -> String {
     let config = ServerConfig::async_load_server_config(Path::new("Server.toml"))
@@ -40,15 +40,19 @@ pub async fn update_hash() {
 
     let file = config.server.files;
 
-    // let data_path = config.data_path;
-    let tempdir = tempdir().unwrap();
+    let data_path = Path::new(&config.data_path);
+
+    if !data_path.exists() {
+        fs::create_dir_all(&data_path).await.unwrap();
+    }
 
     for f in file {
         let name = f.name.clone();
-        let path = format!("{}/{}.json", tempdir.path().display(), name);
+        let name = name + ".json";
+
         let patcher = RUpdater::new(f);
-        let path = Path::new(&path);
+        let path = data_path.join(name);
+
         patcher.save_updater_data(&path);
     }
-    todo!();
 }

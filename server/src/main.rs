@@ -5,15 +5,12 @@ extern crate rocket;
 
 use rocket::fs::NamedFile;
 use rocket::serde::json::Json;
-use rocket::tokio::fs;
-
+use rocket::tokio::{fs, task, time::interval};
 use rr_updater::setting::ServerConfig;
 use rr_updater::RUpdater;
-
+use std::path::{Path, PathBuf};
 use utils::{get_files_path, update_hash};
 use utils::{ListApi, UpdateApi};
-
-use std::path::{Path, PathBuf};
 
 const CONFIG_PATH: &'static str = "./Server.toml";
 
@@ -91,10 +88,24 @@ async fn update(key: String) -> Json<UpdateApi> {
     }
 }
 
+async fn timeer() {
+    let _task = task::spawn(async {
+        // 创建一个每隔12小时运行一次的定时器
+        let mut interval = interval(std::time::Duration::from_secs(60 * 60 * 12));
+
+        loop {
+            interval.tick().await;
+            println!("更新 hash");
+            update_hash().await;
+        }
+    });
+}
+
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
     init().await;
-    update_hash().await;
+    // update_hash().await;
+    timeer().await;
 
     let _rocket = rocket::build()
         .mount("/", routes![index, files, files_list, update])
