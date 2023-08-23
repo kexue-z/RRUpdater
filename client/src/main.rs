@@ -1,3 +1,4 @@
+mod config;
 mod downloader;
 mod source;
 mod utils;

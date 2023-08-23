@@ -8,7 +8,7 @@ use config::ServerConfig;
 use rocket::fairing::AdHoc;
 use rocket::fs::NamedFile;
 use rocket::serde::json::Json;
-use rocket::tokio::{fs, task, time::interval};
+use rocket::tokio::fs;
 use rocket::State;
 use rr_updater::RUpdater;
 use std::path::{Path, PathBuf};
@@ -64,31 +64,29 @@ async fn files_list(name: &str, config: &State<ServerConfig>) -> Json<ListApi> {
 #[post("/update?<key>")]
 async fn update(key: String, config: &State<ServerConfig>) -> Json<UpdateApi> {
     if config.key == key {
-        update_hash().await;
+        update_hash(config).await;
         Json(UpdateApi { retult: 1 })
     } else {
         Json(UpdateApi { retult: 0 })
     }
 }
 
-async fn timer() {
-    let _task = task::spawn(async {
-        // 创建一个每隔12小时运行一次的定时器
-        let mut interval = interval(std::time::Duration::from_secs(60 * 60 * 12));
+// async fn timer(config: &State<ServerConfig>) {
+//     let _task = task::spawn(async {
+//         // 创建一个每隔12小时运行一次的定时器
+//         let mut interval = interval(std::time::Duration::from_secs(60 * 60 * 12));
 
-        loop {
-            interval.tick().await;
-            println!("更新 hash");
-            update_hash().await;
-        }
-    });
-}
+//         loop {
+//             interval.tick().await;
+//             println!("更新 hash");
+//             update_hash(config).await;
+//         }
+//     });
+// }
 
 #[rocket::main]
 async fn main() -> Result<(), rocket::Error> {
-    // init().await;
-    // update_hash().await;
-    timer().await;
+    // timer().await;
 
     let _rocket = rocket::build()
         .mount("/", routes![index, files, files_list, update])

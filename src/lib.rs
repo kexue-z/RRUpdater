@@ -6,16 +6,17 @@ use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
-pub mod helper;
-pub mod setting;
-
-use setting::Filesdir;
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct RUpdater {
     pub name: String,
     pub path: PathBuf,
     pub file_data: Vec<FileData>,
+}
+
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct Filesdir {
+    pub name: String,
+    pub path: String,
 }
 
 impl RUpdater {

@@ -1,13 +1,12 @@
 #[allow(unused_imports)]
 use log::{debug, error, info};
 
+use crate::config::{ClientConfig, Sync};
 use crate::utils::{compare_and_find, FPItems};
 use reqwest::blocking::Client as WebClient;
-use rr_updater::setting::{ClientConfig, Filesdir, Sync};
-use rr_updater::RUpdater;
+use rr_updater::{Filesdir, RUpdater};
 use serde::{Deserialize, Serialize};
 use std::path::Path;
-// use tempfile::tempdir;
 use url::Url;
 
 pub fn get_client_config(path: Option<&Path>) -> ClientConfig {

@@ -1,5 +1,6 @@
+use crate::config::ServerConfig;
 use rocket::tokio::fs;
-use rr_updater::setting::ServerConfig;
+use rocket::State;
 use rr_updater::RUpdater;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
@@ -15,12 +16,8 @@ pub struct UpdateApi {
     pub retult: u8,
 }
 
-pub async fn update_hash() {
-    let config = ServerConfig::async_load_server_config(Path::new("Server.toml"))
-        .await
-        .unwrap();
-
-    let file = config.server.files;
+pub async fn update_hash(config: &State<ServerConfig>) {
+    let file = &config.rr_config;
 
     let data_path = Path::new(&config.data_path);
 
@@ -32,7 +29,7 @@ pub async fn update_hash() {
         let name = f.name.clone();
         let name = name + ".json";
 
-        let patcher = RUpdater::new(f);
+        let patcher = RUpdater::new(f.clone());
         let path = data_path.join(name);
 
         patcher.save_updater_data(&path);

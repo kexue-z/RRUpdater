@@ -270,6 +270,7 @@ dependencies = [
  "rr_updater",
  "serde",
  "serde_json",
+ "toml",
  "url",
 ]
 
@@ -1371,7 +1372,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tokio",
- "toml",
  "walkdir",
 ]
 
