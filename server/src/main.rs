@@ -6,14 +6,14 @@ extern crate rocket;
 
 use config::ServerConfig;
 use rocket::fairing::AdHoc;
-use rocket::fs::NamedFile;
+use rocket::fs::{NamedFile, TempFile};
 use rocket::serde::json::Json;
 use rocket::tokio::fs;
-use rocket::State;
+use rocket::{Data, State};
 use rr_updater::RUpdater;
 use std::path::{Path, PathBuf};
-use utils::update_hash;
-use utils::{ListApi, UpdateApi};
+use utils::{update_hash, upload_file};
+use utils::{ListApi, UpdateApi, UploadApi};
 
 #[get("/")]
 async fn index() -> &'static str {
@@ -71,6 +71,22 @@ async fn update(key: String, config: &State<ServerConfig>) -> Json<UpdateApi> {
     }
 }
 
+/// 上传文件
+#[post("/upload/<name>/<path..>?<key>", format = "plain", data = "<file>")]
+async fn upload(
+    key: String,
+    name: &str,
+    path: PathBuf,
+    config: &State<ServerConfig>,
+    file: TempFile<'_>,
+) -> Json<UploadApi> {
+    if key == config.key {
+        Json(upload_file(name, path, file, config).await)
+    } else {
+        Json(UploadApi { result: 0 })
+    }
+}
+
 // async fn timer(config: &State<ServerConfig>) {
 //     let _task = task::spawn(async {
 //         // 创建一个每隔12小时运行一次的定时器
@@ -89,7 +105,7 @@ async fn main() -> Result<(), rocket::Error> {
     // timer().await;
 
     let _rocket = rocket::build()
-        .mount("/", routes![index, files, files_list, update])
+        .mount("/", routes![index, files, files_list, update, upload])
         .attach(AdHoc::config::<ServerConfig>())
         .launch()
         .await?;
